@@ -1,5 +1,5 @@
 # Performance Tracking & Visualization - Set-up 📱
-This is a tool to automate performance tracking via <a href="https://developers.google.com/speed/pagespeed/insights/" target="_blank">Page Speed Insights (PSI)</a> and visualize it with <a href="https://datastudio.google.com/" target="_blank">Data Studio</a>.
+This is a tool to automate performance tracking via <a href="https://developers.google.com/speed/pagespeed/insights/" target="_blank">Page Speed Insights (PSI)</a> and visualize it with <a href="https://datastudio.google.com/" target="_blank">Data Studio</a>. Find an example of the final result <a href="https://datastudio.google.com/c/u/0/reporting/32e34655-a6ef-434a-a47a-e069e6f7d28c/page/VgD" target="_blank">here</a>.
 
 
 ## What do you need?
