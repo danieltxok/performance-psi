@@ -28,4 +28,5 @@ This is a tool to automate performance tracking via <a href="https://developers.
 
 ## Credits 🙏
 Thanks **@pianomister** for the help!
+<br/>
 Thanks **@charisTheo** for the videos!
