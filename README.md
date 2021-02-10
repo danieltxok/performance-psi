@@ -10,7 +10,7 @@ This is a tool to automate performance tracking via <a href="https://developers.
 ## Do you want to give it a try? 😁
 
 ### #1 Set-up the Google Sheets tracker
-> Use your Google account to make a copy of <a href="https://docs.google.com/spreadsheets/d/1YZK-OChRf5cPEnsCqHpzSsEbHzt-MERXxu4y_9R3ZSQ/copy" target="_blank">this Google Sheets template</a> and follow the instructions in the 'How to Use' tab: fill the URL information, give permissions by running an initial manual test and add a time trigger (the video below shows how to set a trigger to run a function on a daily basis).
+> Use your Google account to make a copy of <a href="http://bit.ly/olaf-github" target="_blank">this Google Sheets template</a> and follow the instructions in the 'How to Use' tab: fill the URL information, give permissions by running an initial manual test and add a time trigger (the video below shows how to set a trigger to run a function on a daily basis).
 <br/><br />
 >![How to set a trigger](https://github.com/danieltxok/wpt-lh-perf/blob/master/trigger_demo.gif?raw=true)
 <br/><br />
