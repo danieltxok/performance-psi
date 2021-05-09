@@ -19,12 +19,11 @@
  * Builds the main menu when opening the spreadsheet
  */
 function onOpen() {
-  let spreadsheet = SpreadsheetApp.getActive()
-  let menuEntries = [{
+  const menuEntries = [{
     name: 'Run tests manually',
     functionName: 'runPerfTracker'
   }]
-  spreadsheet.addMenu('PerfTracker', menuEntries)
+  SPREADSHEET.addMenu('PerfTracker', menuEntries)
 }
 
 
@@ -32,12 +31,10 @@ function onOpen() {
  * Reads PSI API Key
  *
  * @return String with the API Key
- * @customfunction
  */
 function getKey() {
-  let spreadsheet = SpreadsheetApp.getActive()
-  let sheet = spreadsheet.getSheetByName(HOW_TO_TAB)
-  let key = sheet.getRange('A5').getValue()
+  const sheet = SPREADSHEET.getSheetByName(HOW_TO_TAB)
+  const key = sheet.getRange('A5').getValue()
   if (key === '') {
     SpreadsheetApp.getUi().alert('Please enter your API Key')
     return
@@ -50,11 +47,10 @@ function getKey() {
  * Clones Sites tab to create the queue
  */
 function cloneSitesSheet() {
-  let spreadsheet = SpreadsheetApp.getActive()
   // Delete any previous copy
-  let old = spreadsheet.getSheetByName(TEMP_QUEUE_TAB)
-  if (old) spreadsheet.deleteSheet(old)
-  let queue = spreadsheet.getSheetByName(SITES_TAB).copyTo(spreadsheet)
+  const old = SPREADSHEET.getSheetByName(TEMP_QUEUE_TAB)
+  if (old) SPREADSHEET.deleteSheet(old)
+  const queue = SPREADSHEET.getSheetByName(SITES_TAB).copyTo(SPREADSHEET)
   queue.setName(TEMP_QUEUE_TAB)
   queue.hideSheet()
 }
@@ -62,7 +58,7 @@ function cloneSitesSheet() {
 
 /**
  * Sets trigger to run tests from queue
- * 
+ *
  * @param {integer} seconds The seconds after the current time
  */
 function setTrigger(seconds) {
@@ -72,14 +68,14 @@ function setTrigger(seconds) {
 
 /**
  * Deletes triggers by handler function
- * 
+ *
  * @param {string} functionName The name of the function run by the trigger
  */
 function deleteTriggers(functionName) {
-  let allTriggers = ScriptApp.getProjectTriggers(); 
+  const allTriggers = ScriptApp.getProjectTriggers()
   for (var i = 0; i < allTriggers.length; i++) {
     if (allTriggers[i].getHandlerFunction() == functionName) {
-      ScriptApp.deleteTrigger(allTriggers[i]);
+      ScriptApp.deleteTrigger(allTriggers[i])
     }
   }
 }
@@ -90,19 +86,18 @@ function deleteTriggers(functionName) {
  */
 function runBatchFromQueue() {
   // Gets batch of URLs
-  let settings = getURLSettings()
-  
+  const URLsettings = getURLSettings()
+
   // Submits the tests
-  let responses = submitTests(settings)
+  const responses = submitTests(URLsettings)
 
   // Outputs data
-  let spreadsheet = SpreadsheetApp.getActive()
-  let sheet = spreadsheet.getSheetByName(RESULTS_TAB)
-  let today = new Date().toJSON().slice(0, 10)
+  const sheet = SPREADSHEET.getSheetByName(RESULTS_TAB)
+  const today = new Date().toJSON().slice(0, 10)
   for (let i = 0; i < responses.length; i++) {
-    let url = settings[i][0]
-    let label = settings[i][1]
-    let device = settings[i][2]
+    let url = URLsettings[i][0]
+    let label = URLsettings[i][1]
+    let device = URLsettings[i][2]
 
     // Pulls data
     let content = JSON.parse(responses[i].getContentText())
@@ -114,7 +109,7 @@ function runBatchFromQueue() {
       if (results.crux_data === false) {
         note = 'Not enough CrUX data.\n\nThe CrUX Report does not have enough data for this URL or domain.'
       } else if (results.origin_fallback === true) {
-        note = 'Not enough CrUX data.\n\nThe CrUX Report does not have enough data for this URL and it falled back to show data for the origin.'
+        note = 'Not enough CrUX data.\n\nThe CrUX Report does not have enough data for this URL and it fell back to showing data for the origin.'
       }
       addNote(note, null)
     } else {
@@ -130,18 +125,16 @@ function runBatchFromQueue() {
  * Reads URL, Label and Device information and then deletes them from queue
  *
  * @return Array with all the settings for each URL
- * @customfunction
  */
 function getURLSettings() {
-  let spreadsheet = SpreadsheetApp.getActive()
-  let sheet = spreadsheet.getSheetByName(TEMP_QUEUE_TAB)
+  const sheet = SPREADSHEET.getSheetByName(TEMP_QUEUE_TAB)
   let last_row = sheet.getLastRow() - 1
   if (sheet.getLastRow() > TESTS_PER_BATCH + 1) {
     last_row = TESTS_PER_BATCH
     setTrigger(100)
   }
-  let range = sheet.getRange(2, 1, last_row, 3)
-  let settings = range.getValues()
+  const range = sheet.getRange(2, 1, last_row, 3)
+  const settings = range.getValues()
   sheet.deleteRows(2, last_row);
   return settings
 }
@@ -152,13 +145,12 @@ function getURLSettings() {
  *
  * @param {array} settings The URL settings for all tests
  * @return Array with all the API responses
- * @customfunction
  */
 function submitTests(settings) {
   // Gets, Builds & Fetches URLs (https://developers.google.com/speed/docs/insights/v5/reference/pagespeedapi/runpagespeed#request)
-  let key = getKey()
-  let categories = 'category=ACCESSIBILITY&category=BEST_PRACTICES&category=PERFORMANCE&category=PWA&category=SEO'
-  let serverURLs = []
+  const key = getKey()
+  const categories = 'category=ACCESSIBILITY&category=BEST_PRACTICES&category=PERFORMANCE&category=PWA&category=SEO'
+  const serverURLs = []
   for (let item in settings) {
     let url = settings[item][0]
     let device = settings[item][2]
@@ -168,7 +160,7 @@ function submitTests(settings) {
     }
     serverURLs.push(serverURL)
   }
-  let responses = UrlFetchApp.fetchAll(serverURLs)
+  const responses = UrlFetchApp.fetchAll(serverURLs)
   return responses
 }
 
@@ -178,22 +170,21 @@ function submitTests(settings) {
  *
  * @param {object} content The JSON object to parse
  * @return Object with post-processed array data and two flags
- * @customfunction
  */
 function parseResults(content) {
-  // Initiates results variable
-  let results = {
+  // Initiates allResults variable
+  const allResults = {
     data: null,
     crux_data: false,
     origin_fallback: false
   }
 
   // Processes data (https://developers.google.com/speed/docs/insights/v5/reference/pagespeedapi/runpagespeed#response)
-  let lighthouseResult = content.lighthouseResult
-  let loadingExperience = content.loadingExperience
+  const lighthouseResult = content.lighthouseResult
+  const loadingExperience = content.loadingExperience
 
   // Lighthouse Categories
-  let categories = [
+  const categories = [
     lighthouseResult['categories']['performance']['score'] * 100,
     lighthouseResult['categories']['accessibility']['score'] * 100,
     lighthouseResult['categories']['best-practices']['score'] * 100,
@@ -202,7 +193,7 @@ function parseResults(content) {
   ]
 
   // Lighthouse Metrics
-  let metrics = [
+  const metrics = [
     lighthouseResult['audits']['server-response-time']['numericValue'],
     lighthouseResult['audits']['first-contentful-paint']['numericValue'],
     lighthouseResult['audits']['speed-index']['numericValue'],
@@ -213,20 +204,19 @@ function parseResults(content) {
   ]
 
   // Lighthouse Assets
-  let assets = []
+  const assets = []
   for (let i = 0; i <= 8; i++) {
     assets.push(lighthouseResult['audits']['resource-summary']['details']['items'][i]['transferSize'] / 1024)
     assets.push(lighthouseResult['audits']['resource-summary']['details']['items'][i]['requestCount'])
   }
 
   // Lighthouse Version
-  let version = lighthouseResult['lighthouseVersion']
+  const version = lighthouseResult['lighthouseVersion']
 
   // CrUX
-  //
   let crux = []
   if (loadingExperience['metrics']) {
-    results.crux_data = true
+    allResults.crux_data = true
     crux = [
       // Overall categorization
       loadingExperience['overall_category'],
@@ -259,12 +249,12 @@ function parseResults(content) {
     // Checks if data falls back to domain
     // If not sufficient field data for the page, the API responds with Origin Field Data and origin_fallback = true
     if (loadingExperience['origin_fallback']) {
-      results.origin_fallback = true
+      allResults.origin_fallback = true
     }
   }
   // Puts all data together and returns
-  results.data = [].concat(categories, metrics, assets, version, crux)
-  return results
+  allResults.data = [].concat(categories, metrics, assets, version, crux)
+  return allResults
 }
 
 
@@ -273,12 +263,10 @@ function parseResults(content) {
  *
  * @param {string} note The note
  * @param {string} formatColor The color
- * @customfunction
  */
 function addNote(note, formatColor) {
-  let spreadsheet = SpreadsheetApp.getActive()
-  let sheet = spreadsheet.getSheetByName(RESULTS_TAB)
-  let lastRow = sheet.getLastRow()
+  const sheet = SPREADSHEET.getSheetByName(RESULTS_TAB)
+  const lastRow = sheet.getLastRow()
   sheet.getRange(`${lastRow}:${lastRow}`).setBackground(formatColor)
   if (note != null) {
     sheet.getRange(`D${lastRow}`).setNote(note)
