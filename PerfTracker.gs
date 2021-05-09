@@ -23,18 +23,19 @@ const SITES_TAB = 'Sites'
 const TEMP_QUEUE_TAB = 'Queue'
 const RESULTS_TAB = 'Results'
 const TESTS_PER_BATCH = 5
+const SPREADSHEET = SpreadsheetApp.getActive()
 
 
 /**
- * Creates queue and sets new trigger
- */
+  * Creates queue and sets new trigger
+  */
 function runPerfTracker() {
   // Creates queue
   cloneSitesSheet()
-  
+
   // Deletes previously finished triggers
   deleteTriggers('runBatchFromQueue')
 
-  // Sets trigger
+  // Sets trigger in X seconds
   setTrigger(10)
 }
