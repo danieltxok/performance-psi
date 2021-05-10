@@ -205,9 +205,11 @@ function parseResults(content) {
 
   // Lighthouse Assets
   const assets = []
-  for (let i = 0; i <= 8; i++) {
-    assets.push(lighthouseResult['audits']['resource-summary']['details']['items'][i]['transferSize'] / 1024)
-    assets.push(lighthouseResult['audits']['resource-summary']['details']['items'][i]['requestCount'])
+  const resources = lighthouseResult['audits']['resource-summary']['details']['items']
+  const assetsTemplate = ['total', 'script', 'image', 'stylesheet', 'document', 'font', 'other', 'media', 'third-party']
+  for (const asset in assetsTemplate) {
+    assets.push(resources.find(x => x.resourceType === assetsTemplate[asset])['transferSize'] / 1024)
+    assets.push(resources.find(x => x.resourceType === assetsTemplate[asset])['requestCount'])
   }
 
   // Lighthouse Version
